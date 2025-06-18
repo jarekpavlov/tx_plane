@@ -44,11 +44,12 @@
 }
   void loop()
 {
+
                                      // Control Stick Calibration for channels
   data.roll = Border_Map(1023 - analogRead(A1), 0, 512, 1023, true);        // "true" or "false" for signal direction | "true" veya "false" sinyal yönünü belirler
 
   data.pitch = Border_Map(1023 - analogRead(A0), 0, 512, 1023, true);      
-  data.throttle = Border_Map(analogRead(A6),570, 800, 1023, false);  // For Single side ESC
+  data.throttle = Border_Map(analogRead(A6),0, 800, 1023, false);  // For Single side ESC
   // data.throttle = Border_Map( analogRead(A1),0, 512, 1023, false ); // For Bidirectional ESC
   radio.write(&data, sizeof(Signal));  
   wdt_reset();
