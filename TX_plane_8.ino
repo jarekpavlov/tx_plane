@@ -8,6 +8,9 @@
   #define trimbut_2 3                      // Trim button 2 / Pin D3
   #define trimbut_3 4                      // Trim button 3 / Pin D4
   #define trimbut_4 5                      // Trim button 4 / Pin D5
+  #define autopilot_9 9                      // autopilot / Pin D9
+  #define autopilot_led 10                 // autopilot_led / Pin D10
+  bool buttonWasPressed = false;
   const uint64_t pipeOut = 000322;         // NOTE: The same as in the receiver 000322
   RF24 radio(7, 8);                       // select CE,CSN pin
   //int pitchTrimMiddle = EEPROM.read(1) * 4;        // Reading trim values from Eprom
@@ -18,47 +21,66 @@
   byte throttle;
   byte pitch;
   byte roll;
+  bool autopilot;
 };
   Signal data;
   void ResetData() 
-{
-  data.throttle = 0;
-  data.pitch = 127;
-  data.roll = 127;
-}
+  {
+    data.throttle = 0;
+    data.pitch = 127;
+    data.roll = 127;
+    data.autopilot = false;
+  }
   void setup()
-{
+  {
                                        //Configure the NRF24 module
-  radio.begin();
-  radio.openWritingPipe(pipeOut);
-  radio.setChannel(100);
-  radio.setAutoAck(false);
-  radio.setDataRate(RF24_250KBPS);    // The lowest data rate value for more stable communication
-  radio.setPALevel(RF24_PA_MAX);      // Output power is set for maximum
+    radio.begin();
+    radio.openWritingPipe(pipeOut);
+    radio.setChannel(100);
+    radio.setAutoAck(false);
+    radio.setDataRate(RF24_250KBPS);    // The lowest data rate value for more stable communication
+    radio.setPALevel(RF24_PA_MAX);      // Output power is set for maximum
 
-  radio.stopListening();              // Start the radio comunication for Transmitter
-  ResetData();
-  pinMode(trimbut_1, INPUT_PULLUP); 
-  pinMode(trimbut_2, INPUT_PULLUP);
-  pinMode(trimbut_3, INPUT_PULLUP); 
-  pinMode(trimbut_4, INPUT_PULLUP);
-  //pitchTrimMiddle = EEPROM.read(1) * 4;
-  //rollTrimMiddle = EEPROM.read(3) * 4;
-  wdt_enable(WDTO_120MS);
+    radio.stopListening();              // Start the radio comunication for Transmitter
+    ResetData();
+    pinMode(trimbut_1, INPUT_PULLUP); 
+    pinMode(trimbut_2, INPUT_PULLUP);
+    pinMode(trimbut_3, INPUT_PULLUP); 
+    pinMode(trimbut_4, INPUT_PULLUP);
+    pinMode(autopilot_9, INPUT_PULLUP);
+    pinMode(autopilot_led, OUTPUT);
+    //pitchTrimMiddle = EEPROM.read(1) * 4;
+    //rollTrimMiddle = EEPROM.read(3) * 4;
+    wdt_enable(WDTO_120MS);
 
-}
+  }
                                       // Joystick center and its borders
   int Border_Map(int val, int lower, int middle, int upper, bool reverse)
-{
-  val = constrain(val, lower, upper);
-  if ( val < middle )
-  val = map(val, lower, middle, 0, 128);
-  else
-  val = map(val, middle, upper, 128, 255);
-  return ( reverse ? 255 - val : val );
-}
+  {
+    val = constrain(val, lower, upper);
+    if ( val < middle )
+    val = map(val, lower, middle, 0, 128);
+    else
+    val = map(val, middle, upper, 128, 255);
+    return ( reverse ? 255 - val : val );
+  }
   void loop()
-{
+  {
+    // setting button to turn on autopilot to switch mode on taking pressure off
+    if (digitalRead(autopilot_9)==LOW) {
+      buttonWasPressed = true;
+    }
+    if (digitalRead(autopilot_9)==HIGH && buttonWasPressed) {
+      data.autopilot = !data.autopilot;
+      buttonWasPressed = false;
+    }
+    //
+    if (data.autopilot) {
+      digitalWrite(autopilot_led, HIGH);
+    } else {
+      digitalWrite(autopilot_led, LOW);
+    }
+
   if(digitalRead(trimbut_1)==LOW && rollTrimMiddle < 630) {
     rollTrimMiddle=rollTrimMiddle+15;
     //EEPROM.write(1,rollTrimMiddle/4); 
@@ -84,7 +106,7 @@
                                      // Control Stick Calibration for channels
   data.roll = Border_Map(1023 - analogRead(A1), 0, rollTrimMiddle, 1023, true);        // "true" or "false" for signal direction | "true" veya "false" sinyal yönünü belirler
 
-  data.pitch = Border_Map(1023 - analogRead(A0), 0, pitchTrimMiddle, 1023, true);      
+  data.pitch = Border_Map(analogRead(A0), 0, pitchTrimMiddle, 1023, true);      
   data.throttle = Border_Map(analogRead(A6),0, 800, 1023, false);  // For Single side ESC
   // data.throttle = Border_Map( analogRead(A1),0, 512, 1023, false ); // For Bidirectional ESC
   radio.write(&data, sizeof(Signal));  
