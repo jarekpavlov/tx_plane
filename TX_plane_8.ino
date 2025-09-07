@@ -84,23 +84,23 @@
   if(digitalRead(trimbut_1)==LOW && rollTrimMiddle < 630) {
     rollTrimMiddle=rollTrimMiddle+15;
     //EEPROM.write(1,rollTrimMiddle/4); 
-    delay (130);
+    delay(130);
   }   
   if(digitalRead(trimbut_2)==LOW && rollTrimMiddle > 280){
     rollTrimMiddle=rollTrimMiddle-15;
     //EEPROM.write(1,rollTrimMiddle/4);
-    delay (130);
+    delay(130);
   }
  
-  if(digitalRead(trimbut_4)==LOW && pitchTrimMiddle < 630) {
-    pitchTrimMiddle = pitchTrimMiddle+  15;
+  if(digitalRead(trimbut_3)==LOW && pitchTrimMiddle < 630) {
+    pitchTrimMiddle = pitchTrimMiddle + 15;
     //EEPROM.write(3,pitchTrimMiddle/4);
-    delay (130);
+    delay(130);
   }   
-  if(digitalRead(trimbut_3)==LOW && pitchTrimMiddle > 280){
+  if(digitalRead(trimbut_4)==LOW && pitchTrimMiddle > 280){
     pitchTrimMiddle = pitchTrimMiddle - 15;
     //EEPROM.write(3,pitchTrimMiddle/4);
-    delay (130);
+    delay(130);
   }  
 
                                      // Control Stick Calibration for channels
