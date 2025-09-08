@@ -8,11 +8,11 @@
   #define trimbut_2 3                      // Trim button 2 / Pin D3
   #define trimbut_3 4                      // Trim button 3 / Pin D4
   #define trimbut_4 5                      // Trim button 4 / Pin D5
-  #define autopilot_9 9                      // autopilot / Pin D9
-  #define autopilot_led 10                 // autopilot_led / Pin D10
+  #define autopilot_7 7                      // autopilot / Pin D7
+  #define autopilot_led 8                 // autopilot_led / Pin D8
   bool buttonWasPressed = false;
   const uint64_t pipeOut = 000322;         // NOTE: The same as in the receiver 000322
-  RF24 radio(7, 8);                       // select CE,CSN pin
+  RF24 radio(9, 10);                       // select CE,CSN pin
   //int pitchTrimMiddle = EEPROM.read(1) * 4;        // Reading trim values from Eprom
   //int rollTrimMiddle = EEPROM.read(3) * 4;        
   int pitchTrimMiddle = 512;
@@ -47,7 +47,7 @@
     pinMode(trimbut_2, INPUT_PULLUP);
     pinMode(trimbut_3, INPUT_PULLUP); 
     pinMode(trimbut_4, INPUT_PULLUP);
-    pinMode(autopilot_9, INPUT_PULLUP);
+    pinMode(autopilot_7, INPUT_PULLUP);
     pinMode(autopilot_led, OUTPUT);
     //pitchTrimMiddle = EEPROM.read(1) * 4;
     //rollTrimMiddle = EEPROM.read(3) * 4;
@@ -67,10 +67,10 @@
   void loop()
   {
     // setting button to turn on autopilot to switch mode on taking pressure off
-    if (digitalRead(autopilot_9)==LOW) {
+    if (digitalRead(autopilot_7)==LOW) {
       buttonWasPressed = true;
     }
-    if (digitalRead(autopilot_9)==HIGH && buttonWasPressed) {
+    if (digitalRead(autopilot_7)==HIGH && buttonWasPressed) {
       data.autopilot = !data.autopilot;
       buttonWasPressed = false;
     }
