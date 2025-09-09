@@ -110,13 +110,11 @@
   data.throttle = Border_Map(analogRead(A6),0, 800, 1023, false);  // For Single side ESC
   // data.throttle = Border_Map( analogRead(A1),0, 512, 1023, false ); // For Bidirectional ESC
   radio.write(&data, sizeof(Signal));
-  delay(10);
   radio.startListening();
-  delay(10);
+  delay(2);
     while (radio.available()) {
     radio.read(&ledOn, sizeof(bool));                                   // Receive the data
   }
-  delay(10);
   radio.stopListening();
   if (ledOn) {
     digitalWrite(autopilot_led, HIGH);
