@@ -3,7 +3,6 @@
   #include <SPI.h>
   #include <nRF24L01.h>
   #include <RF24.h>
-  #include <avr/wdt.h>
   #define trimbut_1 2                       // Trim button 1 / Pin D2
   #define trimbut_2 3                      // Trim button 2 / Pin D3
   #define trimbut_3 4                      // Trim button 3 / Pin D4
@@ -23,6 +22,7 @@
   byte roll;
   bool autopilot;
 };
+  bool ledOn;
   Signal data;
   void ResetData() 
   {
@@ -52,7 +52,6 @@
     pinMode(autopilot_led, OUTPUT);
     //pitchTrimMiddle = EEPROM.read(1) * 4;
     //rollTrimMiddle = EEPROM.read(3) * 4;
-    wdt_enable(WDTO_120MS);
 
   }
                                       // Joystick center and its borders
@@ -77,9 +76,9 @@
     }
     //
     if (data.autopilot) {
-      digitalWrite(autopilot_led, HIGH);
+     // digitalWrite(autopilot_led, HIGH);
     } else {
-      digitalWrite(autopilot_led, LOW);
+    //  digitalWrite(autopilot_led, LOW);
     }
 
   if(digitalRead(trimbut_1)==LOW && rollTrimMiddle < 630) {
@@ -110,6 +109,18 @@
   data.pitch = Border_Map(analogRead(A0), 0, pitchTrimMiddle, 1023, true);      
   data.throttle = Border_Map(analogRead(A6),0, 800, 1023, false);  // For Single side ESC
   // data.throttle = Border_Map( analogRead(A1),0, 512, 1023, false ); // For Bidirectional ESC
-  radio.write(&data, sizeof(Signal));  
-  wdt_reset();
+  radio.write(&data, sizeof(Signal));
+  delay(10);
+  radio.startListening();
+  delay(10);
+    while (radio.available()) {
+    radio.read(&ledOn, sizeof(bool));                                   // Receive the data
+  }
+  delay(10);
+  radio.stopListening();
+  if (ledOn) {
+    digitalWrite(autopilot_led, HIGH);
+  } else {
+     digitalWrite(autopilot_led, LOW);
+  }
 }
