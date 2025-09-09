@@ -11,7 +11,7 @@
   #define autopilot_7 7                      // autopilot / Pin D7
   #define autopilot_led 8                 // autopilot_led / Pin D8
   bool buttonWasPressed = false;
-  const uint64_t pipeOut = 000322;         // NOTE: The same as in the receiver 000322
+  const byte pipe[][10] = {"channel","channel2"};         // NOTE: The same as in the receiver 000322
   RF24 radio(9, 10);                       // select CE,CSN pin
   //int pitchTrimMiddle = EEPROM.read(1) * 4;        // Reading trim values from Eprom
   //int rollTrimMiddle = EEPROM.read(3) * 4;        
@@ -35,7 +35,8 @@
   {
                                        //Configure the NRF24 module
     radio.begin();
-    radio.openWritingPipe(pipeOut);
+    radio.openWritingPipe(pipe[0]);
+    radio.openReadingPipe(1,pipe[1]);
     radio.setChannel(100);
     radio.setAutoAck(false);
     radio.setDataRate(RF24_250KBPS);    // The lowest data rate value for more stable communication
