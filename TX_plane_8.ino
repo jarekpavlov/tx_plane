@@ -16,14 +16,18 @@
   //int rollTrimMiddle = EEPROM.read(3) * 4;        
   int pitchTrimMiddle = 512;
   int rollTrimMiddle = 512;
-  struct Signal {
+struct Signal {
   byte throttle;
   byte pitch;
   byte roll;
   bool autopilot;
 };
+Signal data;
+struct ResponseSignal {
+  byte voltage;
   bool ledOn;
-  Signal data;
+};
+ResponseSignal responseData;
   void ResetData() 
   {
     data.throttle = 0;
@@ -113,10 +117,10 @@
   radio.startListening();
   delay(2);
     while (radio.available()) {
-    radio.read(&ledOn, sizeof(bool));                                   // Receive the data
+    radio.read(&responseData, sizeof(ResponseSignal));                                   // Receive the data
   }
   radio.stopListening();
-  if (ledOn) {
+  if (responseData.ledOn) {
     digitalWrite(autopilot_led, HIGH);
   } else {
      digitalWrite(autopilot_led, LOW);
