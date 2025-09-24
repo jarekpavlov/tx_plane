@@ -79,9 +79,9 @@ ResponseSignal responseData;
     }
     //
     if (data.autopilot) {
-     // digitalWrite(autopilot_led, HIGH);
+      digitalWrite(autopilot_led, HIGH);
     } else {
-    //  digitalWrite(autopilot_led, LOW);
+      digitalWrite(autopilot_led, LOW);
     }
 
   if(digitalRead(trimbut_1)==LOW && rollTrimMiddle < 630) {
