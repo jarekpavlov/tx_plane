@@ -24,7 +24,6 @@ struct Signal {
 };
 Signal data;
 struct ResponseSignal {
-  byte voltage;
   bool ledOn;
 };
 ResponseSignal responseData;
@@ -41,7 +40,7 @@ ResponseSignal responseData;
     radio.begin();
     radio.openWritingPipe(pipe[0]);
     radio.openReadingPipe(1,pipe[1]);
-    radio.setChannel(100);
+    radio.setChannel(118);
     radio.setAutoAck(false);
     radio.setDataRate(RF24_250KBPS);    // The lowest data rate value for more stable communication
     radio.setPALevel(RF24_PA_MAX);      // Output power is set for maximum
@@ -114,7 +113,8 @@ ResponseSignal responseData;
   data.throttle = Border_Map(analogRead(A6),0, 800, 1023, false);  // For Single side ESC
   // data.throttle = Border_Map( analogRead(A1),0, 512, 1023, false ); // For Bidirectional ESC
   radio.write(&data, sizeof(Signal));
-  radio.startListening();
+  /*
+    radio.startListening();
   delay(2);
     while (radio.available()) {
     radio.read(&responseData, sizeof(ResponseSignal));                                   // Receive the data
@@ -125,4 +125,5 @@ ResponseSignal responseData;
   } else {
      digitalWrite(autopilot_led, LOW);
   }
+  */
 }
