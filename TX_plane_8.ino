@@ -1,5 +1,6 @@
 // 8 Channel Transmitter (No Trim)
 // Input pin A5
+
   #include <SPI.h>
   #include <nRF24L01.h>
   #include <RF24.h>
@@ -10,7 +11,7 @@
   #define autopilot_7 7                      // autopilot / Pin D7
   #define autopilot_led 8                 // autopilot_led / Pin D8
   bool buttonWasPressed = false;
-  const byte pipe[][10] = {"channel","channel2"};         // NOTE: The same as in the receiver 000322
+  const byte pipe[5] = "ch1";         // NOTE: The same as in the receiver 000322
   RF24 radio(9, 10);                       // select CE,CSN pin
   //int pitchTrimMiddle = EEPROM.read(1) * 4;        // Reading trim values from Eprom
   //int rollTrimMiddle = EEPROM.read(3) * 4;        
@@ -38,9 +39,8 @@ ResponseSignal responseData;
   {
                                        //Configure the NRF24 module
     radio.begin();
-    radio.openWritingPipe(pipe[0]);
-    radio.openReadingPipe(1,pipe[1]);
-    radio.setChannel(118);
+    radio.openWritingPipe(pipe);
+    radio.setChannel(100);
     radio.setAutoAck(false);
     radio.setDataRate(RF24_250KBPS);    // The lowest data rate value for more stable communication
     radio.setPALevel(RF24_PA_MAX);      // Output power is set for maximum
@@ -113,17 +113,4 @@ ResponseSignal responseData;
   data.throttle = Border_Map(analogRead(A6),0, 800, 1023, false);  // For Single side ESC
   // data.throttle = Border_Map( analogRead(A1),0, 512, 1023, false ); // For Bidirectional ESC
   radio.write(&data, sizeof(Signal));
-  /*
-    radio.startListening();
-  delay(2);
-    while (radio.available()) {
-    radio.read(&responseData, sizeof(ResponseSignal));                                   // Receive the data
-  }
-  radio.stopListening();
-  if (responseData.ledOn) {
-    digitalWrite(autopilot_led, HIGH);
-  } else {
-     digitalWrite(autopilot_led, LOW);
-  }
-  */
 }
