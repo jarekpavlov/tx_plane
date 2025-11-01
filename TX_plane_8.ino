@@ -21,6 +21,7 @@ struct Signal {
   byte throttle;
   byte pitch;
   byte roll;
+  byte yaw;
   bool autopilot;
 };
 Signal data;
@@ -33,6 +34,7 @@ ResponseSignal responseData;
     data.throttle = 0;
     data.pitch = 127;
     data.roll = 127;
+    data.yaw = 127;
     data.autopilot = false;
   }
   void setup()
@@ -107,8 +109,8 @@ ResponseSignal responseData;
   }  
 
                                      // Control Stick Calibration for channels
-  data.roll = Border_Map(1023 - analogRead(A1), 0, rollTrimMiddle, 1023, true);        // "true" or "false" for signal direction | "true" veya "false" sinyal yönünü belirler
-
+  data.roll = Border_Map(analogRead(A1), 0, rollTrimMiddle, 1023, false);        // "true" or "false" for signal direction
+  data.yaw = Border_Map(analogRead(A7), 0, 512, 1023, false);
   data.pitch = Border_Map(analogRead(A0), 0, pitchTrimMiddle, 1023, true);      
   data.throttle = Border_Map(analogRead(A6),0, 800, 1023, false);  // For Single side ESC
   // data.throttle = Border_Map( analogRead(A1),0, 512, 1023, false ); // For Bidirectional ESC
